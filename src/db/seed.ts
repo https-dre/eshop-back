@@ -45,6 +45,14 @@ const seed = async () => {
             price_in_cents INTEGER DEFAULT 0,
             created_at_utc TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `
+
+    await sql/* sql */`
+        CREATE TABLE IF NOT EXISTS images (
+            id TEXT PRIMARY KEY,
+            name VARCHAR(300) NOT NULL,
+            local TEXT NOT NULL
         )
     `
 
