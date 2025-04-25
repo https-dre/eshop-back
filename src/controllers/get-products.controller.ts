@@ -1,0 +1,50 @@
+import { FastifyReply, FastifyRequest } from "fastify";
+import z from "zod";
+import { ProductsRepository } from "../repos/product.repo";
+import { sql } from "../db/client";
+import { ListProductsService } from "../services/get-product.usecase";
+
+export const GetProductsSchema = {
+    querystring: z.object({
+        page: z.coerce.number().int().positive().default(1),
+        limit: z.coerce.number().int().positive().default(10)
+    }),
+    response: {
+        200: z.object({
+            count: z.number().int().positive(),
+            results: z.array(
+                z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    description: z.string(),
+                    price_in_cents: z.number().int().positive()
+                })
+            )
+        }).optional(),
+        500: z.string(),
+        404: z.object({
+            message: z.string()
+        })
+    }
+}
+
+export const GetProducts = async (req: FastifyRequest, reply: FastifyReply) => {
+    const { page, limit } = req.query as any;
+    const repo = new ProductsRepository(sql);
+
+    try {
+        const result = await ListProductsService(repo, limit, page);
+
+        if(result.length == 0) {
+            reply.status(404).send({ message: "Products not found"})
+            return;
+        }
+
+        reply.status(200).send({
+            count: result.length,
+            results: result
+        })
+    } catch (err) {
+        reply.status(500).send(`Internal server error: ${err}`)
+    }
+}
