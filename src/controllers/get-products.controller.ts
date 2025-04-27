@@ -7,8 +7,8 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 const schema = {
     querystring: z.object({
-        limit: z.number().int().positive().default(10),
-        page: z.number().int().default(0)
+        limit: z.coerce.number().int().positive().default(10),
+        page: z.coerce.number().int().default(0)
     }),
     response: {
         200: z.object({
