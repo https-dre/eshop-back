@@ -1,8 +1,9 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 import { ProductsRepository } from "../repos/product.repo";
 import { sql } from "../db/client";
 import { ListProductsService } from "../services/get-product.usecase";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 export const GetProductsSchema = {
     querystring: z.object({
@@ -28,7 +29,7 @@ export const GetProductsSchema = {
     }
 }
 
-export const GetProducts = async (req: FastifyRequest, reply: FastifyReply) => {
+const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     const { page, limit } = req.query as any;
     const repo = new ProductsRepository(sql);
 
@@ -48,3 +49,9 @@ export const GetProducts = async (req: FastifyRequest, reply: FastifyReply) => {
         reply.status(500).send(`Internal server error: ${err}`)
     }
 }
+
+export const GetProducts = async (app: FastifyInstance) => {
+    app.withTypeProvider<ZodTypeProvider>()
+    .get('/products', { schema: GetProductsSchema}, handler)
+}
+
