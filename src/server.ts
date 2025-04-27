@@ -9,6 +9,15 @@ const app = fastify({
     ignoreTrailingSlash: true
 });
 
+const env = [process.env.PORT, process.env.SUPABASE_ID, 
+    process.env.SERVICE_ROLE, process.env.ANON_KEY, process.env.DATABASE_URL];
+
+for (const e of env) {
+    if (!e) {
+        throw new Error('Missing env configs');
+    }
+}
+
 const run = async () => {
     await app.register(fastifyMultipart)
 
