@@ -13,4 +13,15 @@ export class ProductsRepository {
 
         return result;
     }
+
+    public async select_by_id(id: string): Promise<Product | null> {
+        const result = await this.sql<Product[]>`
+            SELECT * FROM products WHERE id = ${id}
+        `
+
+        if (result.length > 0) {
+            return result[0];
+        }
+        return null;
+    }
 }
