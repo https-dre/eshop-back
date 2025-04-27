@@ -6,7 +6,7 @@ import { ProductImageRepository } from "../repos/productimage.repo";
 import { sql } from "../db/client";
 
 const UploadImage_Schema = {
-  querystring: z.object({
+  params: z.object({
     id: z.string().uuid()
   }),
   summary: 'Send a file with multipart/form-data',
@@ -32,7 +32,7 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     const file = await req.file();
     if (!file) throw new Error('Nenhum arquivo foi enviado!');
 
-    const { id } = req.query as { id: string };
+    const { id } = req.params as { id: string };
 
     const repo = new ProductImageRepository(sql);
 
@@ -48,5 +48,5 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
 
 export const UploadImage = async (app: FastifyInstance) => {
     app.withTypeProvider<ZodTypeProvider>()
-      .post('/product-image', { schema: UploadImage_Schema }, handler)
+      .post('/product-image/:id', { schema: UploadImage_Schema }, handler)
 }
