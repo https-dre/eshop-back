@@ -10,7 +10,8 @@ type ListProducts_Result = {
 
 export async function ListProductsService
     (repo: ProductRepo, limit: number, page: number): Promise<ListProducts_Result[]> {
-    const result = await repo.get_products(limit, page);
+    const offset = page == 1 ? 0 : page * limit;
+    const result = await repo.get_products(limit, offset);
 
     return result.map(p => {
         return {

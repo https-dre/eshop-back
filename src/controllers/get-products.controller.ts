@@ -5,10 +5,10 @@ import { sql } from "../db/client";
 import { ListProductsService } from "../services/get-product.usecase";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-export const GetProductsSchema = {
+const GetProductsSchema = {
     querystring: z.object({
-        page: z.coerce.number().int().positive().default(1),
-        limit: z.coerce.number().int().positive().default(10)
+        limit: z.coerce.number().int().positive().default(10),
+        page: z.coerce.number().int().default(0)
     }),
     response: {
         200: z.object({
@@ -30,7 +30,7 @@ export const GetProductsSchema = {
 }
 
 const handler = async (req: FastifyRequest, reply: FastifyReply) => {
-    const { page, limit } = req.query as any;
+    const { page, limit } = req.query as { page: number, limit: number };
     const repo = new ProductsRepository(sql);
 
     try {
