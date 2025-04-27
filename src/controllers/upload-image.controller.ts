@@ -1,11 +1,14 @@
 import { FastifyRequest, FastifyReply, FastifyInstance } from "fastify";
 import { UploadFileService } from "../services/upload-file.usecase";
 import z from "zod";
-import fastifyMultipart from "@fastify/multipart";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { ProductImageRepository } from "../repos/productimage.repo";
+import { sql } from "../db/client";
 
 const UploadImage_Schema = {
-
+  querystring: z.object({
+    id: z.string().uuid()
+  })
 }
 
 const handler = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -17,18 +20,21 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     const file = await req.file();
     if (!file) throw new Error('Nenhum arquivo foi enviado!');
 
-    const result = await UploadFileService(file);
+    const { id } = req.query as { id: string };
 
-    if (![200, 201].includes(result)) {
-      console.log(result)
-      reply.code(400).send({ details: "upload fails!"});
+    const repo = new ProductImageRepository(sql);
+
+    const result = await UploadFileService(repo, file, id);
+
+    if (![200, 201].includes(result.bucket_status)) {
+      reply.code(result.bucket_status).send({ details: result.message });
       return;
     }
 
-    reply.code(201).send({ details: "file uploaded!"})
+    reply.code(201).send({ details: "File uploaded!" })
 }
 
 export const UploadImage = async (app: FastifyInstance) => {
     app.withTypeProvider<ZodTypeProvider>()
-        .post('/product-image', { schema: UploadImage_Schema }, handler)
+      .post('/product-image', { schema: UploadImage_Schema }, handler)
 }
