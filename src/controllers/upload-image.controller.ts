@@ -16,7 +16,14 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
 
     const file = await req.file();
     if (!file) throw new Error('Nenhum arquivo foi enviado!');
-    await UploadFileService(file);
+
+    const result = await UploadFileService(file);
+
+    if (![200, 201].includes(result)) {
+      console.log(result)
+      reply.code(400).send({ details: "upload fails!"});
+      return;
+    }
 
     reply.code(201).send({ details: "file uploaded!"})
 }
