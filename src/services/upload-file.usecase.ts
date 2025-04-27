@@ -1,16 +1,33 @@
 import { MultipartFile } from "@fastify/multipart";
-import path from "path";
-import fs from "fs";
 import { randomUUID } from "crypto";
-import { pipeline } from "stream/promises";
+import { Readable } from "stream";
+
+const url = `https://${process.env.SUPABASE_ID}.supabase.co/`
+
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+        chunks.push(chunk as Buffer);
+    }
+
+    return Buffer.concat(chunks);
+}
 
 export async function UploadFileService
-    (data: MultipartFile): Promise<void> {
-        const new_name = randomUUID() + data.filename.replaceAll(' ', '_').toLocaleLowerCase();
-        
-        await pipeline(
-            data.file,
-            fs.createWriteStream(`./bucket/${new_name}`)
-        )
+    (data: MultipartFile): Promise<number> {
+    const filename = `${randomUUID()}_${data.filename.replace(/\s+/g, '_').toLowerCase()}`;
+    const buffer = await streamToBuffer(data.file)
+
+    const response = await fetch(`${url}/storage/v1/object/product-image/${filename}`, {
+        method: "POST",
+        body: buffer,
+        headers: {
+            "Content-Type": data.mimetype || 'application/octet-stream',
+            "Authorization": `Bearer ${process.env.SERVICE_ROLE as string}`,
+            "Cache-Control": "max-age=3600"
+        }
+    });
+    
+    return response.status;
 }
 
