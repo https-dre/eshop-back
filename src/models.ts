@@ -7,8 +7,9 @@ export type Product = {
     created_at: string
 }
 
-export type File = {
+export type ProductImage = {
     id: string,
     name: string,
-    local: string
+    local: string,
+    product_id: string
 }
