@@ -8,7 +8,19 @@ import { sql } from "../db/client";
 const UploadImage_Schema = {
   querystring: z.object({
     id: z.string().uuid()
-  })
+  }),
+  summary: 'Send a file with multipart/form-data',
+  response: {
+    201: z.object({
+      details: z.string()
+    }),
+    500: z.object({
+      details: z.string()
+    }),
+    400: z.object({
+      details: z.string()
+    })
+  }
 }
 
 const handler = async (req: FastifyRequest, reply: FastifyReply) => {

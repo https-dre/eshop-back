@@ -5,10 +5,10 @@ import { sql } from "../db/client";
 import { ListProductsService } from "../services/get-product.usecase";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-const GetProductsSchema = {
+const schema = {
     querystring: z.object({
-        limit: z.coerce.number().int().positive().default(10),
-        page: z.coerce.number().int().default(0)
+        limit: z.number().int().positive().default(10),
+        page: z.number().int().default(0)
     }),
     response: {
         200: z.object({
@@ -21,7 +21,7 @@ const GetProductsSchema = {
                     price_in_cents: z.number().int().positive()
                 })
             )
-        }).optional(),
+        }),
         500: z.string(),
         404: z.object({
             message: z.string()
@@ -52,6 +52,6 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
 
 export const GetProducts = async (app: FastifyInstance) => {
     app.withTypeProvider<ZodTypeProvider>()
-    .get('/products', { schema: GetProductsSchema}, handler)
+    .get('/products', { schema}, handler)
 }
 
