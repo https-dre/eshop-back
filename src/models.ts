@@ -6,3 +6,9 @@ export type Product = {
     created_at_utc: string,
     created_at: string
 }
+
+export type File = {
+    id: string,
+    name: string,
+    local: string
+}
