@@ -24,7 +24,8 @@ const schema = {
             count: z.number().int(),
             result: z.array(
                 z.object({
-                    id: z.string().uuid()
+                    id: z.string().uuid(),
+                    local: z.string()
                 })
             )
         })

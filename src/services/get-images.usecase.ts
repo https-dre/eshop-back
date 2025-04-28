@@ -7,9 +7,14 @@ type params = {
     product_id: string
 }
 
-export const GetImagesUseCase = 
-    async (repo: ProductImageRepo, data: params): Promise<Pick<ProductImage, 'id'>[]> => {
+export const GetImagesUseCase =
+    async (repo: ProductImageRepo, data: params): Promise<Pick<ProductImage, 'id' | 'local'>[]> => {
         const result = await repo.select_by_product_id(data.limit, data.page, data.product_id);
 
-        return result.map(img => ({id: img.id}))
-}
+        return result.map(img => {
+            return {
+                id: img.id,
+                local: `https://${process.env.SUPABASE_ID}.supabase.co/storage/v1/object/public/${img.local}`
+            }
+        })
+    }
