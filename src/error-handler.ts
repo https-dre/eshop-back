@@ -22,7 +22,7 @@ type FastifyErrorHandler = FastifyInstance['errorHandler']
 export const errorHandler: FastifyErrorHandler = (error, _, reply) => {
     if(error instanceof ZodError) {
         return reply.status(400).send({
-            message: `Error during validatip trng`,
+            message: `Error during validating`,
             errors: error.flatten().fieldErrors
         })
     }
