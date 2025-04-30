@@ -8,6 +8,7 @@ import { UploadImage } from "./controllers/upload-image.controller";
 import { GetImagesController } from "./controllers/get-images.controller";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import { errorHandler } from "./error-handler";
 
 const app = fastify({
     ignoreTrailingSlash: true
@@ -47,10 +48,7 @@ const run = async () => {
 
     app.register(import('@fastify/cors'))
 
-    app.addHook('onError', (_, reply, error, done) => {
-        console.log(error);
-        reply.status(500).send(error)
-    });
+    app.setErrorHandler(errorHandler);
 
     await app.register(GetProducts);
     await app.register(UploadImage);
