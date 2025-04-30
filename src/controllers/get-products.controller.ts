@@ -33,25 +33,21 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     const { page, limit } = req.query as { page: number, limit: number };
     const repo = new ProductsRepository(sql);
 
-    try {
-        const result = await ListProductsService(repo, limit, page);
+    const result = await ListProductsService(repo, limit, page);
 
-        if(result.length == 0) {
-            reply.status(404).send({ message: "Products not found"})
-            return;
-        }
-
-        reply.status(200).send({
-            count: result.length,
-            results: result
-        })
-    } catch (err) {
-        reply.status(500).send(`Internal server error: ${err}`)
+    if (result.length == 0) {
+        reply.status(404).send({ message: "Products not found" })
+        return;
     }
+
+    reply.status(200).send({
+        count: result.length,
+        results: result
+    })
 }
 
 export const GetProducts = async (app: FastifyInstance) => {
     app.withTypeProvider<ZodTypeProvider>()
-    .get('/products', { schema}, handler)
+        .get('/products', { schema }, handler)
 }
 
