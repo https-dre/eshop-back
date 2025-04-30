@@ -30,7 +30,7 @@ const run = async () => {
             consumes: ['application/json', 'multipart/form-data'],
             produces: ['appplication/json'],
             info: {
-                title: 'https-dre Shop',
+                title: 'E-commerce with https-dre',
                 description: '...',
                 version: '1.0.0'
             },
