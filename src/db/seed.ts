@@ -129,7 +129,9 @@ const seed = async () => {
         CREATE TABLE IF NOT EXISTS cart_itens (
             id TEXT PRIMARY KEY,
             product_id TEXT NOT NULL,
-            FOREIGN KEY (product_id) REFERENCES products(id)
+            user_id TEXT NOT NULL,
+            FOREIGN KEY (product_id) REFERENCES products(id),
+            FOREIGN KEY (user_id) REFERENCES users(id)
         )
     `
 
