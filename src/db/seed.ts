@@ -102,6 +102,37 @@ const seed = async () => {
         )
     `
 
+    await sql/* sql */`
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            cpf CHAR(11) NOT NULL,
+            password_hash TEXT NOT NULL
+        )
+    `
+
+    await sql/* sql */`
+        CREATE TABLE IF NOT EXISTS orders (
+            id TEXT PRIMARY KEY,
+            product_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            payment_method TEXT NOT NULL,
+            status VARCHAR(50) NOT NULL,
+            payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (product_id) REFERENCES products(id),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    `
+
+    await sql/* sql */`
+        CREATE TABLE IF NOT EXISTS cart_itens (
+            id TEXT PRIMARY KEY,
+            product_id TEXT NOT NULL,
+            FOREIGN KEY (product_id) REFERENCES products(id)
+        )
+    `
+
     if (process.env.TEST_DATABASE) {
         await populate_products();
         await populate_images();
