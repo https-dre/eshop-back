@@ -13,7 +13,7 @@ const schema = {
         limit: z.coerce.number().int().optional().default(10)
     }),
     params: z.object({
-        id: z.string().uuid()
+        product_id: z.string().uuid()
     }),
 
     response: {
@@ -34,10 +34,10 @@ const schema = {
 
 const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     const { page, limit } = req.query as { page: number, limit: number };
-    const { id } = req.params as { id: string };
+    const { product_id } = req.params as { product_id: string };
 
     const product_repo = new ProductsRepository(sql);
-    const product = await product_repo.select_by_id(id);
+    const product = await product_repo.select_by_id(product_id);
 
     if (!product) {
         reply.code(404).send({ message: 'Product not found!'})
@@ -45,12 +45,12 @@ const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     }
 
     const repo = new ProductImageRepository(sql);
-    const result = await GetImagesUseCase(repo, { limit, page, product_id: id });
+    const result = await GetImagesUseCase(repo, { limit, page, product_id });
 
     reply.code(200).send({ count: result.length, result });
 };
 
 export const GetImagesController = async (app: FastifyInstance) => {
     app.withTypeProvider<ZodTypeProvider>()
-        .get('/product-image/:id', { schema }, handler);
+        .get('/product-image/:product_id', { schema }, handler);
 };
