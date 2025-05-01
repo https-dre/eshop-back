@@ -26,11 +26,11 @@ const UploadImage_Schema = {
 const handler = async (req: FastifyRequest, reply: FastifyReply) => {
     const contentType = req.headers['content-type'];
     if (!contentType?.includes('multipart/form-data')) {
-      throw new Error('Content-Type inválido');
+      return reply.code(400).send('Content-Type inválido!')
     }
 
     const file = await req.file();
-    if (!file) throw new Error('Nenhum arquivo foi enviado!');
+    if (!file) return reply.code(400).send('Nenhum arquivo foi enviado!')
 
     const { product_id } = req.params as { product_id: string };
 
